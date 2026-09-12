@@ -8,7 +8,7 @@ build_dep:
 	sudo apt-get -y install $(BUILD_DEP)
 
 .PHONY: lint
-lint: lint.yaml lint.ansible
+lint: lint.yaml lint.ansible lint.schema
 
 .PHONY: lint.yaml
 lint.yaml:
@@ -18,3 +18,7 @@ lint.yaml:
 .PHONY: lint.ansible
 lint.ansible:
 	ansible-lint --offline -f pep8 --nocolor
+
+.PHONY: lint.schema
+lint.schema:
+	roles/users/scripts/lint_userdb.py

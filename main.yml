@@ -1,0 +1,11 @@
+---
+
+- name: Baseline for all types of systems
+  hosts: linux
+  become: true
+
+  # pre_tasks:
+  # TODO
+
+  roles:
+    - users

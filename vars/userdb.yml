@@ -1,0 +1,28 @@
+---
+
+# The passwords and ssh keys get quite long, so relax lint for this file
+# yamllint disable rule:line-length
+
+hamish:
+  access:
+    host_groups:
+      account:
+        linux:
+      ssh_key:
+        linux:
+  authentication:
+    passwords:
+      bao.dimsumlabs.com: $6$RiGfINHJ$8MmdJsdv.6Li24AeTXs1krlNnPsFt0Z/Qfw6Z55vr8Y2uYXVs1KqaVY3KceXiSNKLspPfVKZnxWsvLJosp1DB.
+    ssh_key: |
+      ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAO4xCVBQAgujNjE2aul365h0nB3Fn6BXQWKmugBFA89 hamish@lrrr
+      ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDOMC/EW7HXA+OkcVwNqzWb8saRFYUX9k8mzMHaoa6nV hamish@x220
+      ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFNtIJqFVCK8/GoPatnIZhTHlkUzBF2TaifKArkyNiEs hamish@peril
+      ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK1NiIEQG4EhdmgE+oS612L6eP9yhIcMonOQ/Cy1I8Vn hamish@xps13
+      ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOqTtpQkv6bgHxWhr4QGf7WOY1760ArL/asGL3Lxqhlr hamish@tp25
+      ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOxAY+IHDIg+8n1QxpsFyvK7QZIJUt/tO/iFCzgszIiy hamish@hp800
+  comment: Hamish Coleman
+  linger: true
+  uid: 1020
+  unix_groups:
+    sudo:
+    systemd-journal:

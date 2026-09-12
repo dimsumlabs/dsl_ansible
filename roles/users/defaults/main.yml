@@ -1,0 +1,4 @@
+---
+
+# The default is to take ownership of the deploy user(s) ssh authorized keys
+users_manage_deploy_access: true

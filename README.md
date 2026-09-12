@@ -6,17 +6,13 @@ things are setup.
 
 ## User access setup
 
-In order to access the infrastructure, you will need to be setup first.
-You will need to ask someone who has existing access to create your access.
+In order to access the infrastructure, the vars/userdb.yml needs to be updated
+with the correct details.  Then someone who has existing access needs to
+deploy the change.
 
-They will create and deploy a user for you, using the ssh key and the crypted
-password that you provide them.
-
-To generate this crypted password:
-```
-sudo apt-get -y install openssl
-openssl passwd -6
-```
+The details in the userdb that you will need to supply include:
+- Crypted password (generate with `openssl passwd -6`)
+- SSH public key
 
 To ensure a minimum level of security:
 - no users will ever be able to login with their password.

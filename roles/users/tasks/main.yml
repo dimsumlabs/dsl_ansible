@@ -1,0 +1,209 @@
+---
+
+- name: Include groupdb
+  ansible.builtin.include_vars:
+    file: unix_groupdb.yml
+    name: unix_groupdb
+
+- name: Include userdb
+  ansible.builtin.include_vars:
+    file: userdb.yml
+    name: userdb
+
+- name: Add required groups
+  ansible.builtin.group:
+    name: "{{ item }}"
+    state: "{{ unix_groupdb[item].state | default('present') }}"
+    system: true
+  loop: "{{ unix_groupdb | list }}"
+
+- name: Init calculated vars
+  ansible.builtin.set_fact:
+    _userdb: {}
+
+- name: Calculate _userdb
+  ansible.builtin.set_fact:
+    _userdb: |
+      {{
+        _userdb | combine(
+          {
+            item.key: item.value | combine(
+              {
+                "_meta": {
+                  "add_normal": (
+                    item.value.access.host_groups.account | default({})
+                    | intersect(group_names) | length > 0
+                  ),
+                  "add_bastion": (
+                    "devops_bastion_true" in group_names
+                    and
+                    item.value.access.host_groups.bastion | default({})
+                    | intersect(group_names) | length > 0
+                  ),
+                  "github": (
+                    item.value.authentication.ssh_key | default("") == "github"
+                  ),
+                  "linger": (
+                    item.value.linger | default(False)
+                  ),
+                  "present": (
+                    item.value.state | default("present") == "present"
+                  ),
+                  "ssh_key": (
+                    item.value.access.host_groups.ssh_key | default({})
+                    | intersect(group_names) | length > 0
+                  ),
+                }
+              }
+            )
+          }
+        )
+      }}
+  loop: "{{ userdb | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+
+- name: Add users
+  # ansible-lint appears to have a bug with the long template line in the
+  # password field
+  #
+  # noqa: args
+  ansible.builtin.user:
+    uid: "{{ item.value.uid }}"
+    name: "{{ item.key }}"
+    password: >-
+      {{
+        item.value.authentication.passwords[inventory_hostname]
+        | default(item.value.authentication.password)
+        | default('!')
+      }}
+    state: "{{ item.value._meta.state | default('present') }}"
+    comment: "{{ item.value.comment }}"
+    groups: "{{ item.value.unix_groups | default({}) | list }}"
+    shell: /bin/bash
+  when:
+    - item.value._meta.present
+    - item.value._meta.add_normal or item.value._meta.add_bastion
+  loop: "{{ _userdb | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: Linger add
+  ansible.builtin.file:
+    access_time: preserve
+    group: root
+    mode: "u=rw,go=r"
+    modification_time: preserve
+    owner: root
+    path: "/var/lib/systemd/linger/{{ item.key }}"
+    state: >-
+      {{
+        (
+          item.value._meta.linger
+          | default(False)
+        )
+        | ternary('touch', 'absent')
+      }}
+  when:
+    - item.value._meta.present
+    - item.value._meta.add_normal or item.value._meta.add_bastion
+    - ansible_distribution_version != "18.04"
+  loop: "{{ _userdb | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: Remove users
+  ansible.builtin.user:
+    force: true
+    name: "{{ item.key }}"
+    state: absent
+  when:
+    - not item.value._meta.present
+    - item.value.access.removable | default(True)
+  loop: "{{ _userdb | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: Linger remove
+  ansible.builtin.file:
+    path: "/var/lib/systemd/linger/{{ item.key }}"
+    state: absent
+  when:
+    - not item.value._meta.present
+    - item.value.access.removable | default(True)
+    - ansible_distribution_version != "18.04"
+  loop: "{{ _userdb | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: Add ssh keys from github
+  ansible.posix.authorized_key:
+    exclusive: true
+    comment: |-
+      Ansible Managed - github user {{ item.value.authentication.github_user }}
+    user: "{{ item.key }}"
+    key: "https://github.com/{{ item.value.authentication.github_user }}.keys"
+  when:
+    - item.value._meta.present
+    - item.value._meta.add_normal or item.value._meta.add_bastion
+    - item.value._meta.ssh_key
+    - item.value._meta.github
+  loop: "{{ _userdb | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: Add ssh keys static definition
+  ansible.posix.authorized_key:
+    exclusive: true
+    comment: "Ansible Managed - static"
+    user: "{{ item.key }}"
+    key: "{{ item.value.authentication.ssh_key }}"
+  when:
+    - item.value.authentication.ssh_key is defined
+    - item.value._meta.present
+    - item.value._meta.add_normal or item.value._meta.add_bastion
+    - item.value._meta.ssh_key
+    - not item.value._meta.github
+  loop: "{{ _userdb | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: Add empty ssh keys
+  ansible.posix.authorized_key:
+    exclusive: true
+    comment: "Ansible Managed - empty"
+    user: "{{ item.key }}"
+    key: ""
+  when:
+    - item.value._meta.present
+    - item.value._meta.add_normal or item.value._meta.add_bastion
+    - not item.value._meta.ssh_key
+  loop: "{{ _userdb | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: Disable access to build account
+  ansible.builtin.file:
+    state: absent
+    path: "/home/{{ item }}/.ssh/authorized_keys"
+  when:
+    - users_manage_deploy_access
+  loop:
+    - admin
+    - ec2-user
+    - ubuntu
+
+- name: Disable cloud-init junk groups
+  ansible.builtin.group:
+    name: "{{ item }}"
+    state: absent
+  when:
+    - ansible_os_family == "Debian"
+  loop:
+    - wheel
+
+# TODO:
+# Some future improvements:
+#
+# - groups - create new unix groups as needed
