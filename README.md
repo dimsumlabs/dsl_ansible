@@ -18,6 +18,14 @@ sudo apt-get -y install openssl
 openssl passwd -6
 ```
 
+To ensure a minimum level of security:
+- no users will ever be able to login with their password.
+- to use sudo, you must type a password in
+- There is no root password known
+
+This means that the combination of the ssh key and the user password become
+a very light-weight two factor process.
+
 ## Running Ansible
 
 You will need to have ansible installed and on your path before running
@@ -28,6 +36,41 @@ On a Debian system, the Makefile can assist you with this:
 ```
 make build_dep
 ```
+
+### Check your login
+
+To quickly check if your environment is setup and your user account, ssh key
+and sudo password are all working, you can use this command:
+
+```
+ansible --become -K -m ping linux
+```
+
+### Standard deploy
+
+To run through the standard playbook and deploy everything needed, a command
+similar to the following can be used:
+
+```
+ansible-playbook main.yml --check -K
+```
+
+### Avoiding needing to type in the become password
+
+Due to our security expectations, the sudo - or "become" - password will need
+to be given to ansible on each run (The `-K` option in the above examples is
+turning on the ansible prompt for this password)
+
+Since typing the password can quickly get tedious - and we want to avoid
+people trying to avoid the security requirements - this repo also includes
+an ansible plugin to allow integrating with your existing password manager.
+
+If your environment contains "LOCAL_SUDO_LOOKUP", and that points to a
+script, then the included plugin will call that script to fetch the required
+password(s).
+
+The script is called as "{SCRIPT} --sudo ^{HOSTNAME}$" and should return the
+password on stdout.
 
 ## Coding Style
 
