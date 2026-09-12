@@ -4,8 +4,9 @@
   hosts: linux
   become: true
 
-  # pre_tasks:
-  # TODO
+  pre_tasks:
+    - name: Preflight check
+      ansible.builtin.import_tasks: preflight.yml
 
   roles:
     - users

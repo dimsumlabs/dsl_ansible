@@ -1,0 +1,30 @@
+---
+# Pre-flight checks to do before touching a host
+#
+
+- block:
+    - name: Check for maintenance mode
+      stat:
+        path: /maint
+      check_mode: false
+      register: maint_mode_check
+      failed_when: maint_mode_check.stat.exists
+      changed_when: maint_mode_check.stat.exists
+  rescue:
+    - name: Read maint reason
+      ansible.builtin.slurp:
+        src: /maint
+      register: maint_file
+
+    - name: "Host is in maintenance mode"
+      debug:
+        msg:
+          - "{{ maint_file['content'] | b64decode }}"
+          - "Remove /maint to run ansible"
+      failed_when: true
+
+- name: Ensure a sane environment
+  assert:
+    that:
+      - ansible_user_uid == 0
+      - ansible_env.LANG in ['C', 'C.UTF-8']
