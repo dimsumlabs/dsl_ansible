@@ -13,6 +13,7 @@ hamish:
   authentication:
     passwords:
       bao.dimsumlabs.com: $6$RiGfINHJ$8MmdJsdv.6Li24AeTXs1krlNnPsFt0Z/Qfw6Z55vr8Y2uYXVs1KqaVY3KceXiSNKLspPfVKZnxWsvLJosp1DB.
+      hargow.dimsumlabs.com: $y$j9T$C4uFLEus7//linLfCOpYt0$XhpOYhZz3bNiIPiFzQ7G0HZgMG6zdOKueG2jOg0x293
     ssh_key: |
       ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAO4xCVBQAgujNjE2aul365h0nB3Fn6BXQWKmugBFA89 hamish@lrrr
       ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDOMC/EW7HXA+OkcVwNqzWb8saRFYUX9k8mzMHaoa6nV hamish@x220

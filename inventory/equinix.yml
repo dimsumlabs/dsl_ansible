@@ -12,3 +12,4 @@ linux:
     # to support ansible
     bao.dimsumlabs.com:
       ansible_python_interpreter: /usr/local/python/bin/python3
+    hargow.dimsumlabs.com:
