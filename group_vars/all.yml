@@ -1,0 +1,16 @@
+---
+
+# This special variable used to be a core part of ansible, but they have
+# deprecated in favor of forcing every user to individually define it
+# somewhere in their playbook.
+#
+# In order to simplify debugging, it is useful to clearly mark each deployed
+# file as coming from Ansible - and we have overridden the default value with
+# one that also includes the location of the source template
+#
+# Note that this is violating the rule about putting code into the data and
+# uses jinja as the value must be dynamic.
+ansible_managed:
+  Ansible managed - {{
+    {{template_fullpath | replace(playbook_dir + '/', '')}}
+  }}

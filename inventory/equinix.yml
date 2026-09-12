@@ -1,0 +1,14 @@
+---
+#
+# This inventory file contains the servers that are hosted for us in a
+# Hong Kong datacenter.
+#
+# This hosting is donated by a friend of the space
+#
+
+linux:
+  hosts:
+    # This host is running a Debian install too old for the system python
+    # to support ansible
+    bao.dimsumlabs.com:
+      ansible_python_interpreter: /usr/local/python/bin/python3
