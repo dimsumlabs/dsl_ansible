@@ -1,0 +1,13 @@
+---
+
+- name: Hostname
+  ansible.builtin.include_tasks: hostname.yml
+
+- name: Fix vim
+  ansible.builtin.include_tasks: fix_vim.yml
+  when:
+    - ansible_os_family == "Debian"
+
+- name: Global shell profile
+  ansible.builtin.include_tasks: profile.yml
+

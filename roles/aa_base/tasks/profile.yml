@@ -1,0 +1,22 @@
+---
+
+- name: Set shell environment
+  ansible.builtin.copy:
+    dest: /etc/profile.d/profile.sh
+    owner: root
+    group: root
+    mode: "a=r"
+    content: |
+      # Ansible managed - {{ role_path | replace(playbook_dir + '/', '') }}
+      #
+      readonly HISTCONTROL=ignoreboth:erasedups
+      readonly HISTIGNORE='&:ls:bg:fg:exit'
+      readonly HISTSIZE=99999
+      readonly HISTTIMEFORMAT="%FT%T "
+      export HISTCONTROL HISTIGNORE HISTSIZE HISTTIMEFORMAT
+      shopt -s histappend
+- name: Don't try to reset HIST variables in newly created user bashrc
+  ansible.builtin.replace:
+    path: /etc/skel/.bashrc
+    regexp: '^HIST(CONTROL|SIZE)='
+    replace: '# HIST\1='

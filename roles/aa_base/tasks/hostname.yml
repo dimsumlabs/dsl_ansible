@@ -1,0 +1,10 @@
+---
+
+- name: Set hostname
+  hostname:
+      name: '{{ inventory_hostname }}'
+ 
+- name: Entry in /etc/hosts
+  lineinfile:
+      path: /etc/hosts
+      line: 127.0.0.2 {{ ansible_nodename }} {{ ansible_hostname }}

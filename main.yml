@@ -9,4 +9,5 @@
       ansible.builtin.import_tasks: preflight.yml
 
   roles:
+    - aa_base
     - users

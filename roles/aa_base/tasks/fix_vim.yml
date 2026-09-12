@@ -1,0 +1,29 @@
+---
+
+- name: Install vim
+  ansible.builtin.package:
+    name: vim
+    state: present
+
+- name: Set vimrc.local
+  ansible.builtin.copy:
+    dest: /etc/vim/vimrc.local
+    owner: root
+    group: root
+    mode: "a=r"
+    content: |
+      " Ansible Managed - inline
+      " See: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=864074#40
+ 
+      " Explicitly source defaults.vim so you can override its settings
+      source $VIMRUNTIME/defaults.vim
+      " Prevent it from being loaded again later if the user doesn't have
+      " a vimrc
+      let skip_defaults_vim = 1
+      " Disable the settings you don't like
+      set mouse=
+ 
+- name: Set vim as default editor
+  community.general.alternatives:
+    name: editor
+    path: /usr/bin/vim.basic
