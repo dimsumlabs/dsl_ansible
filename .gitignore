@@ -1,3 +1,7 @@
 
 # Cached information
 /.cache/
+
+# Generated during testing
+/.coverage
+/htmlcov/
