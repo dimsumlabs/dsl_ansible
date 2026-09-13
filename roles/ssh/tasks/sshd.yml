@@ -4,9 +4,9 @@
 #
 
 - name: Install
-  apt:
+  ansible.builtin.apt:
     name:
-        - openssh-server
+      - openssh-server
 
 - name: Configure
   ansible.builtin.copy:

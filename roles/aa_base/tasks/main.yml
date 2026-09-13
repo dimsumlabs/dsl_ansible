@@ -10,4 +10,3 @@
 
 - name: Global shell profile
   ansible.builtin.include_tasks: profile.yml
-

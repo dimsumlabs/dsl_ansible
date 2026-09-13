@@ -15,9 +15,9 @@ class VarsModule(BaseVarsPlugin):
     def get_vars(self, loader, path, entities):
         script_name = os.environ.get("LOCAL_SUDO_LOOKUP")
         if not script_name:
-            # If we dont have the required config variable, do nothing 
+            # If we dont have the required config variable, do nothing
             return {}
-        
+
         # TODO:
         # - in the reference ansibple source, it converts entities to a list
         #   before calling super.  Is this needed?
