@@ -1,0 +1,34 @@
+---
+
+- name: Custom repo keys
+  ansible.builtin.copy:
+    content: "{{ item.value }}"
+    dest: "/etc/apt/keyrings/{{ item.key }}"
+    mode: "a=r"
+  loop: "{{ apt_repo.key | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  notify: Update apt cache
+
+- name: Custom repo sources
+  ansible.builtin.copy:
+    dest: "/etc/apt/sources.list.d/{{ item.key }}.sources"
+    mode: "a=r"
+    content: |
+      # Ansible managed - {{ role_path | replace(playbook_dir + '/', '') }}
+      {% if "Signed-By" not in item.value.source %}
+        {{ item.value.source.update({"Signed-By": "/etc/apt/keyrings/" + item.key + ".asc"}) }}
+      {% endif %}
+
+      {% if not item.value.enabled | default(True) %}
+      Enabled: no
+      {% endif %}
+      {{ item.value.source | to_yaml(default_flow_style=False) }}
+  loop: "{{ apt_repo.custom | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  notify: Update apt cache
+
+# Ensure that any new packages are available to the rest of this play
+- name: Trigger all notified handlers
+  ansible.builtin.meta: flush_handlers

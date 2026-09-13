@@ -1,0 +1,27 @@
+---
+
+- name: Install extrepo
+  ansible.builtin.package:
+    name:
+      - extrepo
+    state: present
+
+- name: Activate extrepo
+  ansible.builtin.command:
+    cmd: "extrepo enable {{ item.key }}"
+    creates: "/etc/apt/sources.list.d/extrepo_{{ item.key }}.sources"
+  when:
+    - (item.value.enabled | default("yes")) == "yes"
+  loop: "{{ apt_repo.extrepo | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: Disable extrepo
+  ansible.builtin.command:
+    cmd: "extrepo disable {{ item.key }}"
+    removes: "/etc/apt/sources.list.d/extrepo_{{ item.key }}.sources"
+  when:
+    - (item.value.enabled | default("yes")) == "no"
+  loop: "{{ apt_repo.extrepo | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"

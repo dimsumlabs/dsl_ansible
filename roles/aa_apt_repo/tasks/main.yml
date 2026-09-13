@@ -1,0 +1,14 @@
+---
+
+- name: Optional extrepo
+  ansible.builtin.include_tasks: extrepo.yml
+  when:
+    - apt_repo.extrepo is defined
+    - ansible_os_family == "Debian"
+
+- name: Optional custom repo
+  ansible.builtin.include_tasks: custom_repo.yml
+  when:
+    - apt_repo.custom is defined
+    - ansible_os_family == "Debian"
+    - ansible_distribution_major_version != "10"
