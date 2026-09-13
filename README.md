@@ -4,6 +4,8 @@ to setup and manage some of the DSL servers.
 It is intended to both deploy configuration and serve as documentation for how
 things are setup.
 
+NOTE: this repository uses git submodules, which need to be fetched by you.
+
 ## User access setup
 
 In order to access the infrastructure, the vars/userdb.yml needs to be updated
