@@ -1,0 +1,20 @@
+---
+#
+# Setup sshd
+#
+
+- name: Install
+  apt:
+    name:
+        - openssh-server
+
+- name: Configure
+  ansible.builtin.copy:
+    dest: /etc/ssh/sshd_config.d/ansible.conf
+    owner: root
+    group: root
+    mode: "a=r"
+    content: |
+      # Ansible managed - {{ role_path | replace(playbook_dir + '/', '') }}
+
+      PermitRootLogin forced-commands-only

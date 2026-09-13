@@ -10,4 +10,5 @@
 
   roles:
     - aa_base
+    - ssh
     - users
