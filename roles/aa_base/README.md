@@ -1,12 +1,14 @@
 This role provides a base set of configuration that is expected on all
 systems.
 
+Nothing in here is configurable - if it needed configuration, it would be in
+its own role
+
 NOTE: this role is named with an `aa` so as to ensure it sorts before other
 roles.
 
 ## hostname
 
-- Always enabled
 - Ensures that the system hostname matches the inventory hostname
 - Adds an entry to /etc/hosts for the hostname
 

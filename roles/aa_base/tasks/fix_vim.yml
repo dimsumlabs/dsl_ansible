@@ -1,10 +1,5 @@
 ---
 
-- name: Install vim
-  ansible.builtin.package:
-    name: vim
-    state: present
-
 - name: Set vimrc.local
   ansible.builtin.copy:
     dest: /etc/vim/vimrc.local

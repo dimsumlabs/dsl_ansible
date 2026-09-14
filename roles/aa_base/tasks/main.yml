@@ -3,6 +3,9 @@
 - name: Hostname
   ansible.builtin.include_tasks: hostname.yml
 
+- name: Packages
+  ansible.builtin.include_tasks: packages.yml
+
 - name: Fix vim
   ansible.builtin.include_tasks: fix_vim.yml
   when:

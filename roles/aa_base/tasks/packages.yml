@@ -1,0 +1,27 @@
+---
+
+- name: Set debconf
+  ansible.builtin.debconf:
+    name: "{{ item.owner }}"
+    question: "{{ item.q }}"
+    value: "{{ item.v }}"
+    vtype: text
+  loop:
+    - owner: unattended-upgrades
+      q: unattended-upgrades/enable_auto_updates
+      v: "true"
+
+- name: Packages install
+  ansible.builtin.apt:
+    name:
+      - curl
+      - etckeeper
+      - htop
+      - netcat-openbsd
+      - rsync
+      - screen
+      - unattended-upgrades
+      - uptimed
+      - vim
+      - vnstat
+    state: present
