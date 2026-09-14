@@ -1,0 +1,58 @@
+# {{ ansible_managed }}
+
+{% import "logging.mod.j2" as logging -%}
+{% import "security.mod.j2" as security -%}
+
+#
+# A pair of default sites to sink all the unrecognised requests
+#
+
+server {
+  listen {{ nginx.default_site.http_port | default(80) }}{{ " proxy_protocol" if nginx.proxy_protocol | default(False) }} default_server;
+  server_name _;
+
+{{ logging.server("default", nginx) }}
+{{ security.server("default", {}) }}
+
+  {{ security.server_location_acme() }}
+
+  location /-/healthy {
+    return 200 "http ok";
+  }
+
+  location /nginx_status {
+    stub_status on;
+    access_log   off;
+    allow 127.0.0.1;
+    allow ::1;
+    deny all;
+  }
+
+  # Note that if we expect "POST" requests, 301 will convert them to GET
+  # and we should use a "rewrite ^ $URL permanent;" instead
+  location / {
+    return 301 https://$host$request_uri;
+  }
+}
+
+
+server {
+  listen {{ nginx.default_site.https_port | default(443) }}{{ " proxy_protocol" if nginx.proxy_protocol | default(False) }} ssl default_server;
+  http2 on;
+  server_name _;
+
+{{ logging.server("default", nginx) }}
+{{ security.server_ssl_raw(
+     "/etc/ssl/certs/ssl-cert-snakeoil.pem",
+     "/etc/ssl/private/ssl-cert-snakeoil.key"
+   ) }}
+{{ security.server("default", {}) }}
+
+  location /-/healthy {
+    return 200 "http ok";
+  }
+
+  location / {
+    return 404;
+  }
+}

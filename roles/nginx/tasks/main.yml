@@ -1,0 +1,5 @@
+---
+
+- name: Optionally configure nginx
+  ansible.builtin.include_tasks: nginx.yml
+  when: nginx is defined

@@ -1,0 +1,21 @@
+# A location for a websocket
+#
+# TODO:
+# - could this be merged with locationtype: proxy?
+#
+# nginx:
+#   vhosts:
+#     example.com:
+#       template_type: generic
+#       locations:
+#         /:
+#           location_type: websocket
+#           proxy: http://localhost:8081
+#
+
+{% import "websocket.mod.j2" as websocket -%}
+
+{% macro render(config) %}
+{{   websocket.location() }}
+     proxy_pass {{ config.proxy }};
+{% endmacro %}

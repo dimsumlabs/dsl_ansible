@@ -1,0 +1,42 @@
+# {{ ansible_managed }}
+
+{% import "logging.mod.j2" as logging -%}
+{% import "security.mod.j2" as security -%}
+{% import "websocket.mod.j2" as websocket -%}
+
+{{ websocket.global() }}
+
+upstream grafana {
+  server localhost:3000;
+}
+
+server {
+  listen 443 ssl http2;
+  server_name {{ item.key }};
+
+{{ logging.server(item.key, nginx) }}
+{% set security_headers = item.value.security_headers | default({}) | combine({"enable": {"cors": False}, "csp": "worker-src 'self' 'unsafe-inline' 'unsafe-eval' blob:"}) %}
+{{ security.server_ssl(item.key) }}
+{{ security.server(item.key, item.value | default({})) }}
+
+
+  client_max_body_size 10m;
+
+  proxy_redirect   off;
+
+  location / {
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $remote_addr;
+
+    proxy_pass http://grafana;
+  }
+
+  # Proxy Grafana Live WebSocket connections.
+  location /api/live/ {
+{{ websocket.location() }}
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $remote_addr;
+
+    proxy_pass http://grafana;
+  }
+}

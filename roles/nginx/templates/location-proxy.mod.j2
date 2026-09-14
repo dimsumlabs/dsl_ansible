@@ -1,0 +1,24 @@
+# A proxied location
+#
+# nginx:
+#   vhosts:
+#     example.com:
+#       template_type: generic
+#       locations:
+#         /:
+#           location_type: proxy
+#           proxy: http://localhost:8080
+#           proxy_set_header:
+#             name: value
+#
+# location / {
+#   proxy_pass http://localhost:8080;
+#   proxy_set_header name value;
+# }
+
+{% macro render(config) %}
+     proxy_pass {{ config.proxy }};
+{%   for header, val in (config.proxy_set_header |default({})).items() %}
+       proxy_set_header {{header}} {{val}};
+{%   endfor %}
+{% endmacro %}

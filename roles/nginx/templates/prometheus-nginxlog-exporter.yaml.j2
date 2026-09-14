@@ -1,0 +1,44 @@
+---
+# {{ ansible_managed }}
+
+# listen:
+#  port: 4040
+#  address: "10.1.2.3"
+#  metrics_endpoint: "/metrics"
+
+namespaces:
+  - name: default
+    format: '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" $request_length $request_time "$upstream_response_time" $realip_remote_addr:$realip_remote_port "$http_x_forwarded_for" $host'
+    source:
+      files:
+        - /var/log/nginx/default_access.log
+    metrics_override:
+      prefix: "nginx"
+    namespace_label: "vhost"
+    histogram_buckets: [.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10]
+{% for vhostname in nginx.vhosts.keys() %}
+  - name: {{ vhostname }}
+    format: '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" $request_length $request_time "$upstream_response_time" $realip_remote_addr:$realip_remote_port "$http_x_forwarded_for" $host'
+    source:
+      files:
+        - /var/log/nginx/{{ vhostname }}_access.log
+    metrics_override:
+      prefix: "nginx"
+    namespace_label: "vhost"
+    histogram_buckets: [.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10]
+{%  if nginx.vhosts[vhostname].locations is defined %}
+{%   for locationname in nginx.vhosts[vhostname].locations.keys() %}
+{%    if nginx.vhosts[vhostname].locations[locationname].logsuffix | default(False) %}
+  - name: {{ vhostname }}{{ locationname }}
+    format: '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" $request_length $request_time "$upstream_response_time" $realip_remote_addr:$realip_remote_port "$http_x_forwarded_for" $host'
+    source:
+      files:
+        - /var/log/nginx/{{ vhostname }}_{{ locationname | replace("/","_") }}_access.log
+    metrics_override:
+      prefix: "nginx"
+    namespace_label: "vhost"
+    histogram_buckets: [.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10]
+{%    endif %}
+{%   endfor %}
+{%  endif %}
+{% endfor %}

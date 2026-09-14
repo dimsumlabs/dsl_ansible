@@ -1,0 +1,38 @@
+# {{ ansible_managed }}
+
+{% import "auth.mod.j2" as auth -%}
+{% import "logging.mod.j2" as logging -%}
+{% import "security.mod.j2" as security -%}
+{% import "websocket.mod.j2" as websocket -%}
+
+{{ websocket.global() }}
+
+server {
+  listen 443 ssl http2;
+  server_name {{ item.key }};
+
+{{ logging.server(item.key, nginx) }}
+{{ security.server_ssl(item.key) }}
+{{ security.server(item.key, item.value | default({})) }}
+{{ auth.server(item.value) }}
+
+  proxy_set_header Host $host;
+  proxy_redirect   off;
+
+  proxy_set_header X-Forwarded-For $remote_addr;
+
+{% if item.value.client_max_body_size is defined -%}
+  client_max_body_size {{ item.value.client_max_body_size }};
+{% endif -%}
+
+  location / {
+{{ auth.location(item.key, item.value) }}
+    proxy_pass {{ item.value.proxy }};
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "Upgrade";
+    proxy_set_header Host $host;
+    proxy_read_timeout 86400;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  }
+}

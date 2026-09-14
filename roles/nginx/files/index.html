@@ -1,0 +1,34 @@
+<html>
+<head>
+<title>Auth Request</title>
+</head>
+<body>
+
+
+<p>To progress your access request, report the following information to
+the help desk:</p>
+<br>
+resource = <span id="url"></span>
+<br>
+<span id="cookies"></span>
+<br>
+<br>
+<a id="link">Try again</a>
+<img id="bug" hidden>
+
+<script>
+  let cookies = document.cookie.split(";");
+  cookies.forEach(function (value) {
+    if (value.startsWith("uid=")) {
+      document.getElementById("cookies").innerHTML = value;
+      document.getElementById("bug").src = "report?" + value;
+    }
+  })
+
+  url = window.location.search.substring(1)
+  document.getElementById("url").innerHTML = url;
+  document.getElementById("link").href = url;
+</script>
+</body>
+</html>
+

@@ -1,0 +1,37 @@
+# {{ ansible_managed }}
+
+{% set vhost = item.key %}
+{% import "auth.mod.j2" as auth -%}
+{% import "location.mod.j2" as location -%}
+{% import "logging.mod.j2" as logging -%}
+{% import "security.mod.j2" as security -%}
+{% import "websocket.mod.j2" as websocket -%}
+
+{{ websocket.global() }}
+
+server {
+  listen {{ item.value.port | default(443) }}{{ " proxy_protocol" if nginx.proxy_protocol | default(False) }} ssl;
+  {# listen [::]:{{ item.value.port | default(443) }} ipv6only=on ssl; #}
+  http2 on;
+  server_name {{ vhost }};
+
+{{ logging.server(vhost, nginx) }}
+{{ security.server_ssl(vhost) }}
+{{ security.server(vhost, item.value) }}
+{{ auth.server(item.value) }}
+
+  port_in_redirect off;
+
+  proxy_redirect   off;
+
+  proxy_set_header Host $host;
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header X-Scheme $scheme;
+  proxy_ssl_server_name on;
+  proxy_ssl_name $host;
+  proxy_hide_header Upgrade;
+
+{% for name, config in item.value.locations.items() %}
+{{   location.location(vhost, name, config) }}
+{% endfor %}
+}

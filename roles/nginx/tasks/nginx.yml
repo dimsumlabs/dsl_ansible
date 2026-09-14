@@ -1,0 +1,117 @@
+---
+
+- name: Packages
+  ansible.builtin.apt:
+    name:
+      - nginx
+      - ssl-cert
+      - prometheus-nginxlog-exporter  # needs repos configured
+      # - libwww-perl # to make munin plugins work
+
+- name: Configure nginxlog exporter
+  ansible.builtin.template:
+    dest: /etc/prometheus-nginxlog-exporter.yaml
+    mode: "a=r"
+    src: prometheus-nginxlog-exporter.yaml.j2
+  notify: Restart prometheus-nginxlog-exporter
+
+- name: Create ssl-dhparam.pem
+  ansible.builtin.command:
+    cmd: "openssl dhparam -out /etc/nginx/ssl-dhparam.pem 2048"
+    creates: "/etc/nginx/ssl-dhparam.pem"
+
+- name: Configure nginx log format
+  ansible.builtin.copy:
+    dest: /etc/nginx/conf.d/log_format.conf
+    src: log_format.conf
+    mode: "a=r"
+  notify: Reload nginx
+
+- name: Disable default config
+  ansible.builtin.file:
+    dest: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Reload nginx
+
+# Obsoleted by the default_site
+- name: Redirector
+  ansible.builtin.file:
+    dest: /etc/nginx/sites-enabled/http_redirect.conf
+    state: absent
+  notify: Reload nginx
+
+- name: Default site
+  ansible.builtin.template:
+    dest: /etc/nginx/sites-enabled/default_site.conf
+    mode: "a=r"
+    src: default_site.conf.j2
+  notify: Reload nginx
+
+- name: The htpasswd databases
+  ansible.builtin.template:
+    dest: /etc/nginx/htpasswd.{{ item.key }}
+    mode: "a=r"
+    src: htpasswd.j2
+  loop: "{{ nginx.htpasswd | default({}) | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+# TODO:
+# - possibly need independant cookie_auth dirs for each vhost.
+#   this would need a index and report mod too
+
+- name: The cookie_auth dir
+  ansible.builtin.file:
+    path: '/etc/nginx/cookie_auth'
+    state: directory
+    mode: 'u=rwx,go=rx'
+  when:
+    - item.value.cookie_auth is defined
+  loop: "{{ nginx.vhosts | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: The cookie_auth report
+  ansible.builtin.copy:
+    dest: '/etc/nginx/cookie_auth/report'
+    mode: 'a=r'
+    content: reported
+  when:
+    - item.value.cookie_auth is defined
+  loop: "{{ nginx.vhosts | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: The cookie_auth index
+  ansible.builtin.copy:
+    src: "index.html"
+    dest: "/etc/nginx/cookie_auth/index.html"
+    mode: "a=r"
+  when:
+    - item.value.cookie_auth is defined
+  loop: "{{ nginx.vhosts | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: Define virtual host
+  ansible.builtin.template:
+    dest: '/etc/nginx/sites-enabled/{{ item.key }}.conf'
+    mode: "a=r"
+    src: "type-{{ item.value.template_type }}.conf.j2"
+  when:
+    - item.value.template_type is defined
+  loop: "{{ nginx.vhosts | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  notify: Reload nginx
+
+- name: Register with dehydrated
+  ansible.builtin.include_role:
+    name: dehydrated
+    tasks_from: client
+  vars:
+    param:  # noqa: var-naming
+      hostname: "{{ item.key }}"
+  loop: "{{ nginx.vhosts | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"

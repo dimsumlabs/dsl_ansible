@@ -1,0 +1,32 @@
+{% import "security.mod.j2" as security -%}
+
+
+{% macro server(config) %}
+{%   if 'cookie_auth' in config %}
+  userid on;
+  userid_domain {{ config.cookie_auth.user_domain }};
+  userid_expires max;
+  userid_flags secure samesite=lax;
+
+  location /_auth/ {
+    alias /etc/nginx/cookie_auth/;
+  }
+{%   endif %}
+{% endmacro -%}
+
+
+{% macro location(sitename, config) %}
+{%   if 'cookie_auth' in config %}
+    if ($cookie_uid ~* "([a-z0-9=/]+)") {
+      set $uid_sane $1;
+    }
+    if (!-f /etc/nginx/cookie_auth/uid=$uid_sane.txt) {
+      return 307 $scheme://{{ sitename }}/_auth/?$request_uri;
+    }
+{%   endif %}
+{%   if 'htpasswd' in config %}
+{{     security.auth_location(sitename, config) }}
+       auth_basic "{{ config.htpasswd.realm | default('Password') }}";
+       auth_basic_user_file /etc/nginx/htpasswd.{{ config.htpasswd.user_tag }};
+{%   endif %}
+{% endmacro %}

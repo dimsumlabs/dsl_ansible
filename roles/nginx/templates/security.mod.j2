@@ -1,0 +1,105 @@
+{% macro server_location_acme() %}
+  location /.well-known/acme-challenge {
+    alias /var/lib/dehydrated/acme-challenges;
+    try_files $uri =404;
+  }
+{% endmacro %}
+
+{% macro server_ssl_raw(cert, key) %}
+  ssl_certificate {{ cert }};
+  ssl_certificate_key {{ key }};
+
+  ssl_session_timeout 5m;
+  #ssl_session_cache shared:SSL:50m;
+
+  # Diffie-Hellman parameter for DHE ciphersuites, recommended 2048 bits
+  #ssl_dhparam /etc/ssl/certs/dhparam.pem;
+
+  ssl_protocols TLSv1.2 TLSv1.3;
+  ssl_ciphers "EECDH+ECDSA+AESGCM EECDH+aRSA+AESGCM EECDH+ECDSA+SHA384 EECDH+ECDSA+SHA256 EECDH+aRSA+SHA384 EECDH+aRSA+SHA256 EECDH EDH+aRSA !aNULL !eNULL !LOW !3DES !MD5 !EXP !PSK !SRP !DSS !RC4";
+  ssl_prefer_server_ciphers on;
+
+  # HSTS (ngx_http_headers_module is required) (15768000 seconds = 6 months)
+  add_header Strict-Transport-Security "max-age=15768000;includeSubDomains";
+
+  # Allow ACME to work for all protocols, simplifying some nested proxy setups
+  {{ server_location_acme() }}
+{% endmacro %}
+
+{% macro server_ssl(sitename) %}
+{{   server_ssl_raw(
+       "/var/lib/dehydrated/certs/" + sitename + "/fullchain.pem",
+       "/var/lib/dehydrated/certs/" + sitename + "/privkey.pem"
+     )
+}}{% endmacro %}
+
+
+{% macro _common_cors(sitename, cors) %}
+{%   if cors.origin is defined %}
+       add_header Access-Control-Allow-Origin "{{ cors.origin | default("https://" + sitename, true) }}";
+{%   endif %}
+{%   if cors.methods is defined %}
+       add_header Access-Control-Allow-Methods "{{ cors.methods | default("GET, POST, OPTIONS, PUT, DELETE", true) }}";
+{%   endif %}
+{%   if cors.headers is defined %}
+       add_header Access-Control-Allow-Headers "{{ cors.headers | default("DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization", true) }}";
+{%   endif %}
+{%   if cors.max_age is defined %}
+       add_header Access-Control-Max-Age "{{ cors.max_age | default("86400", true) }}";
+{%   endif %}
+{%   if cors.credentials | default(false) %}
+       add_header Access-Control-Allow-Credentials "true";
+{%   endif %}
+{% endmacro %}
+
+
+{% macro _common_stuff1(sitename, config) %}
+     add_header X-Frame-Options "SAMEORIGIN";
+     add_header X-Content-Type-Options "nosniff";
+     add_header X-XSS-Protection "1; mode=block";
+{%   if config.security_headers.enable.csp | default(True) %}
+       add_header Content-Security-Policy "{{ config.security_headers.csp | default("default-src 'self' 'unsafe-inline' 'unsafe-eval'", true) }}";
+{%   endif %}
+     add_header X-Permitted-Cross-Domain-Policies "master-only";
+{% endmacro %}
+
+
+{% macro _common_stuff2() %}
+     add_header Referrer-Policy "strict-origin";
+{% endmacro %}
+
+
+{% macro server(sitename, config) %}
+{%   set security_headers = config.security_headers.enabled | default(True) %}
+{%   if not security_headers %}
+  # No security_headers stanza in Ansible config, so no headers added
+{%   else %}
+{{     _common_cors(sitename, config.cors | default({})) }}
+{{     _common_stuff1(sitename, config) }}
+{%   endif %}
+
+{{   _common_stuff2() }}
+  server_tokens off;
+
+  # TODO:
+  # - add some of the above headers to the http section too?
+
+{% endmacro %}
+
+
+{% macro location(sitename, config) %}
+{{   _common_cors(sitename, config.cors | default({})) }}
+{{   _common_stuff1(sitename, config) }}
+{{   _common_stuff2() }}
+{% endmacro %}
+
+
+{% macro auth_location(sitename, config) %}
+{%   set security_headers_enabled = config.security_headers.enabled | default(true) %}
+{%   if 'cors' in config and not security_headers_enabled %}
+       if ($request_method = OPTIONS) {
+{{       location(sitename, config | default({})) }}
+         return 204;
+       }
+{%   endif %}
+{% endmacro %}

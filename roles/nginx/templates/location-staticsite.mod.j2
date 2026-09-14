@@ -1,0 +1,48 @@
+# A static site
+#
+# TODO:
+# - return specific content
+# - maybe from config
+# - maybe version number from host
+#
+# nginx:
+#   vhosts:
+#     example.com:
+#       template_type: generic
+#       locations:
+#         /:
+#           location_type: staticsite
+#           alias: /srv/root
+#           autoindex: true
+#           types:
+#             text/html: htm
+#
+# location / {
+#   alias /srv/root;
+#   index index.html;
+#   try_files $uri $uri/ =404;
+#   autoindex on;
+#   types {
+#     text/html htm;
+#   }
+# }
+
+{% macro render(config) %}
+{%   if config.root is defined %}
+       root {{ config.root }}/;
+{%   else %}
+       alias {{ config.alias }}/;
+{%   endif %}
+     index index.html;
+     try_files $uri $uri/ {{ config.try_files_redirect | default('=404') }};
+{%   if config.autoindex | default(False) %}
+       autoindex on;
+{%   endif %}
+{%   if config.types is defined %}
+       types {
+{%     for mime, ext in config.types.items() %}
+         {{mime}} {{ext}};
+{%     endfor %}
+       }
+{%   endif %}
+{% endmacro %}

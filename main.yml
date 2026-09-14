@@ -11,7 +11,9 @@
   roles:
     - aa_apt_repo
     - aa_base
+    - dehydrated
     - munin
+    - nginx
     - nftables
     - ssh
     - users

@@ -1,0 +1,24 @@
+# An uploaded files location
+#
+# nginx:
+#   vhosts:
+#     example.com:
+#       template_type: generic
+#       locations:
+#         /:
+#           location_type: upload
+#           alias: /srv/root
+#
+# location / {
+#   alias /srv/root;
+#   autoindex on;
+#   dav_methods PUT;
+#   dav_access user:rw group:rw all:r;
+# }
+
+{% macro render(config) %}
+     alias {{ config.alias }}/;
+     autoindex on;
+     dav_methods PUT;
+     dav_access user:rw group:rw all:r;
+{% endmacro %}

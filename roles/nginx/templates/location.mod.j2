@@ -1,0 +1,23 @@
+{# TODO: The deps tree from here is too deep - making a midlayer concern -#}
+{% import "auth.mod.j2" as auth -%}
+{% import "logging.mod.j2" as logging -%}
+{% import "websocket.mod.j2" as websocket -%}
+
+{% macro location(vhost, name, config) %}
+{%   set healthy = config.healthy | default("NONE") %}
+{%   if healthy == "proxy" %}
+     location {{ name }}-/healthy {
+       proxy_pass {{ config.proxy }};
+     }
+{%   elif healthy == "static200" %}
+       return 200 "http ok";
+{#   else, we have no provided healthy url #}
+{%   endif -%}
+
+     location {{ name }} {
+{{   auth.location(vhost, config) }}
+{{   logging.location(vhost, name, config) }}
+{%   import "location-" + config.location_type + ".mod.j2" as locationtype -%}
+{{   locationtype.render(config) }}
+     }
+{% endmacro -%}
