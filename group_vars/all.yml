@@ -16,7 +16,6 @@ ansible_managed:
 apt_repo:
   custom:
     10repo:
-      enabled: false
       source:
         Types: deb
         URIs: https://wob.zot.org/10/apt

@@ -1,5 +1,7 @@
 ---
 
+dehydrated:
+
 nftables:
   monitoring_ports:
     tcp:
@@ -11,3 +13,12 @@ nftables:
       - 80
       - 443
   template_type: simple_server
+
+nginx:
+  vhosts:
+    hargow.dimsumlabs.com:
+      template_type: generic
+      locations:
+        /:
+          location_type: staticsite
+          root: /var/www/html/
