@@ -17,4 +17,5 @@
     content: |
       # Ansible managed - {{ role_path | replace(playbook_dir + '/', '') }}
 
+      PasswordAuthentication no
       PermitRootLogin forced-commands-only
