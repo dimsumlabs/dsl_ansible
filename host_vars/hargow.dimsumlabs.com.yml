@@ -1,0 +1,13 @@
+---
+
+nftables:
+  monitoring_ports:
+    tcp:
+      - 4040
+      - 4949
+      - 9100
+  ports:
+    tcp:
+      - 80
+      - 443
+  template_type: simple_server

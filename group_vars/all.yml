@@ -13,6 +13,11 @@
 ansible_managed:
   Ansible managed - {{ template_fullpath | replace(playbook_dir + '/', '') }}
 
+monitoring_hosts:
+  - 5.9.58.175
+  - 2a01:4f8:161:5494::/64
+  - 203.0.139.0/24
+
 # Allow Hamish's monitoring hosts
 munin:
   allow:
