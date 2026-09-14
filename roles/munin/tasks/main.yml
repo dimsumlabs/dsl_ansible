@@ -1,0 +1,45 @@
+---
+
+- name: Packages
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - munin-node
+    - munin-plugins-extra
+
+- name: Packages for physical hosts
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - smartmontools
+    - ipmitool
+  when: ansible_virtualization_role == "host"
+  notify: Configure munin-node
+
+- name: Config file
+  ansible.builtin.template:
+    dest: /etc/munin/munin-node.conf
+    mode: "a=r"
+    src: munin-node.conf.j2
+  notify: Restart munin-node
+
+# TODO:
+# - consider flushing the handler queue - if there is any error later in the
+#   play, we dont get ACL loaded into munin
+
+# TODO
+# - ideally, detect if the apt_all or apt plugins are actually enabled and
+#   skip disabling the spam in that case
+
+- name: Disable munin cron spam
+  ansible.builtin.file:
+    path: /etc/cron.d/munin-node
+    state: absent
+
+- name: Service
+  ansible.builtin.systemd:
+    name: munin-node
+    enabled: true
+    state: started

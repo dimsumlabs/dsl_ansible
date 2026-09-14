@@ -1,4 +1,4 @@
-#
+# {{ ansible_managed }}
 
 log_level 4
 log_file /var/log/munin/munin-node.log
@@ -22,6 +22,9 @@ ignore_file \.pod$
 # A list of addresses that are allowed to connect
 allow ^127\.0\.0\.1$
 allow ^::1$
+{% for pattern in munin.allow | default([]) %}
+allow {{ pattern }}
+{% endfor %}
 
 # Which address to bind to;
 host *

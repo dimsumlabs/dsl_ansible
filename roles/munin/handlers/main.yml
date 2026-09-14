@@ -1,0 +1,9 @@
+---
+
+- name: Restart munin-node
+  ansible.builtin.service:
+    name: munin-node
+    state: restarted
+
+- name: Configure munin-node  # noqa: no-changed-when
+  ansible.builtin.command: /var/lib/dpkg/info/munin-node.postinst configure

@@ -11,5 +11,6 @@
   roles:
     - aa_apt_repo
     - aa_base
+    - munin
     - ssh
     - users
