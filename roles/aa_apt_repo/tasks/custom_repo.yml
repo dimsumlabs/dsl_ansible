@@ -17,7 +17,13 @@
     content: |
       # Ansible managed - {{ role_path | replace(playbook_dir + '/', '') }}
       {% if "Signed-By" not in item.value.source %}
-        {{ item.value.source.update({"Signed-By": "/etc/apt/keyrings/" + item.key + ".asc"}) }}
+        {{
+          item.value.source.update(
+            {
+              "Signed-By": "/etc/apt/keyrings/" + item.key + ".asc"
+            }
+          )
+        }}
       {% endif %}
 
       {% if not item.value.enabled | default(True) %}
