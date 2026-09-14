@@ -11,6 +11,4 @@
 # Note that this is violating the rule about putting code into the data and
 # uses jinja as the value must be dynamic.
 ansible_managed:
-  Ansible managed - {{
-    {{template_fullpath | replace(playbook_dir + '/', '')}}
-  }}
+  Ansible managed - {{ template_fullpath | replace(playbook_dir + '/', '') }}
