@@ -12,3 +12,9 @@
 # uses jinja as the value must be dynamic.
 ansible_managed:
   Ansible managed - {{ template_fullpath | replace(playbook_dir + '/', '') }}
+
+# Allow Hamish's monitoring hosts
+munin:
+  allow:
+    - '^5\.9\.58\.175$'
+    - '^2a01:4f8:161:5494:.*$'
