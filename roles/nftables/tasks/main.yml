@@ -1,0 +1,5 @@
+---
+
+- name: Optional
+  ansible.builtin.include_tasks: nftables.yml
+  when: nftables is defined

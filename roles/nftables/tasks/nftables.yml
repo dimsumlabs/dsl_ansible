@@ -1,0 +1,26 @@
+---
+
+- name: Remove conflicting firewall managers
+  ansible.builtin.apt:
+    name:
+      - ufw
+    state: absent
+
+- name: Packages
+  ansible.builtin.apt:
+    name:
+      - nftables
+
+- name: Deploy ruleset
+  ansible.builtin.template:
+    dest: '/etc/nftables.conf'
+    mode: "a=r"
+    src: "type-{{ nftables.template_type }}.conf.j2"
+  notify: Reload nftables
+
+- name: Systemd enable
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: true
+  loop:
+    - nftables

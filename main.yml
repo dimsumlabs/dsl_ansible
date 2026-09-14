@@ -12,5 +12,6 @@
     - aa_apt_repo
     - aa_base
     - munin
+    - nftables
     - ssh
     - users

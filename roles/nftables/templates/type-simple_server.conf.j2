@@ -1,0 +1,53 @@
+#!/usr/sbin/nft -f
+#
+# {{ ansible_managed }}
+#
+# Provide a basic firewall with most ports blocked from external users.
+
+flush ruleset
+
+table inet filter {
+    chain global {
+        ct state established,related accept
+        ct state invalid drop
+        ip protocol icmp accept
+        ip6 nexthdr icmpv6 accept
+    }
+
+    chain monitoring {
+{%      for port in nftables.monitoring_ports.tcp | default([]) %}
+          tcp dport {{ port }} accept
+{%      endfor %}
+    }
+
+    chain input {
+        type filter hook input priority 0; policy accept;
+
+        # accept any localhost traffic
+        iif "lo" accept
+
+        # failsafe ssh
+        tcp dport 22 counter accept
+
+{%      for port in nftables.ports.tcp | default([]) %}
+          tcp dport {{ port }} counter accept
+{%      endfor %}
+
+{%      for port in nftables.ports.udp | default([]) %}
+          udp dport {{ port }} counter accept
+{%      endfor %}
+
+{%      for addr in monitoring_hosts | default([]) %}
+{%        if ":" in addr %}
+            ip6 saddr {{ addr }} counter jump monitoring
+{%        else %}
+            ip saddr {{ addr }} counter jump monitoring
+{%        endif %}
+{%      endfor %}
+
+        jump global
+
+        # count and drop any other traffic
+        counter drop
+    }
+}
