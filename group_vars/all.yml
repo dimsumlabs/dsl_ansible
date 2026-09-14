@@ -13,6 +13,31 @@
 ansible_managed:
   Ansible managed - {{ template_fullpath | replace(playbook_dir + '/', '') }}
 
+apt_repo:
+  custom:
+    10repo:
+      enabled: false
+      source:
+        Types: deb
+        URIs: https://wob.zot.org/10/apt
+        Suites: 10repo
+        Components: main
+  key:
+    10repo.asc: |
+      -----BEGIN PGP PUBLIC KEY BLOCK-----
+
+      mDMEapz1nBYJKwYBBAHaRw8BAQdAIN35AT3yjkM52bnoOqyWRTEXDkO08ZjZrCVr
+      ajn7cO20H0hhbWlzaCBDb2xlbWFuIDxoYW1pc2hAem90Lm9yZz6IkAQTFgoAOBYh
+      BOpwE6I9k7Y0zSmz/UZ7ZPUEFAG4BQJqnPWcAhsDBQsJCAcCBhUKCQgLAgQWAgMB
+      Ah4BAheAAAoJEEZ7ZPUEFAG41CwA/RE7EgJF/tbepaEj65reEhDfdLWDg2uslaF+
+      5GK4/ydkAQCX2QgHT8ut4qO2LPqfNb2xxgKDD2KQNuSDyvc6CIUiDLg4BGqc9ZwS
+      CisGAQQBl1UBBQEBB0DT/aGWuy+hRTjWygD3Gb7oM/RK88VF5vTcGm4FrBqIQQMB
+      CAeIeAQYFgoAIBYhBOpwE6I9k7Y0zSmz/UZ7ZPUEFAG4BQJqnPWcAhsMAAoJEEZ7
+      ZPUEFAG4JwAA/1yE4b24ymEy2btZXnYBXAzuS+JLLqKkPxelNxcMI7PGAQDr0bA5
+      c1Gyf2AdsoKSLI+ruWm9PYYYjLt9E4sSA8RCCg==
+      =1ij9
+      -----END PGP PUBLIC KEY BLOCK-----
+
 monitoring_hosts:
   - 5.9.58.175
   - 2a01:4f8:161:5494::/64
