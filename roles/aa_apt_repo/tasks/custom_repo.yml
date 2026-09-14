@@ -25,10 +25,17 @@
           )
         }}
       {% endif %}
+      {{
+        item.value.source.update(
+          {
+            "Enabled": item.value.enabled | default(True) | ternary(
+              "yes",
+              "no"
+            )
+          }
+        )
+      }}
 
-      {% if not item.value.enabled | default(True) %}
-      Enabled: no
-      {% endif %}
       {{ item.value.source | to_yaml(default_flow_style=False) }}
   loop: "{{ apt_repo.custom | dict2items }}"
   loop_control:
