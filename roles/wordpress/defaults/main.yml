@@ -1,0 +1,5 @@
+---
+
+wordpress_versions:
+  6.7.7:
+    checksum: sha1:f39e9f31d1108f368afad5a2d5b550e56c974446

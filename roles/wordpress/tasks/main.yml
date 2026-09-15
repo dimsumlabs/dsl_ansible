@@ -1,0 +1,5 @@
+---
+
+- name: Optionally configure wordpress
+  ansible.builtin.include_tasks: wordpress.yml
+  when: wordpress is defined

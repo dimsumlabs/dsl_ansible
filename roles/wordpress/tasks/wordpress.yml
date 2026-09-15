@@ -1,0 +1,74 @@
+---
+
+- name: Packages
+  ansible.builtin.apt:
+    name:
+      - php-bcmath
+      - php-cli
+      - php-curl
+      - php-fpm
+      - php-gd
+      - php-imagick
+      - php-intl
+      - php-mbstring
+      - php-mysql
+      - php-xml
+      - php-zip
+      - unzip
+    state: present
+
+- name: Download
+  ansible.builtin.get_url:
+    checksum: "{{ wordpress_versions[item.value.version].checksum }}"
+    dest: "/srv/wordpress-{{ item.value.version }}.zip"
+    url: "https://wordpress.org/wordpress-{{ item.value.version }}.zip"
+    mode: "a=r"
+  loop: "{{ wordpress | default({}) | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: Create hosting root
+  ansible.builtin.file:
+    path: "/srv/{{ item.key }}"
+    state: directory
+    mode: "u=rwx,go=rx"
+  loop: "{{ wordpress | default({}) | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: Unzip
+  ansible.builtin.unarchive:
+    creates: wordpress/wp-login.php
+    dest: "/srv/{{ item.key }}"
+    keep_newer: true
+    group: www-data
+    owner: www-data
+    remote_src: true
+    src: "/srv/wordpress-{{ item.value.version }}.zip"
+  loop: "{{ wordpress | default({}) | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+# TODO:
+# force perms
+# - dir = u=rwx,go=rx
+# - file = u=rw,go=r
+
+- name: Config file
+  ansible.builtin.template:
+    dest: "/srv/{{ item.key }}/wordpress/wp-config.php"
+    group: www-data
+    mode: "ug=r,o="
+    owner: www-data
+    src: wp-config.php.j2
+  loop: "{{ wordpress | default({}) | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+# TODO:
+# define( 'FS_METHOD', 'direct' );
+# define( 'WP_MEMORY_LIMIT', '256M' );
+
+# TODO:
+# /etc/php/8.4/fpm/php.ini
+#
