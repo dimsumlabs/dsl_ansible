@@ -1,0 +1,5 @@
+---
+
+- name: Optionally configure mariadb
+  ansible.builtin.include_tasks: mariadb.yml
+  when: mariadb is defined

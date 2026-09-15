@@ -12,6 +12,7 @@
     - aa_apt_repo
     - aa_base
     - dehydrated
+    - mariadb
     - munin
     - nginx
     - nftables
