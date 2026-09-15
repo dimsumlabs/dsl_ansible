@@ -9,6 +9,7 @@
 
 server {
   listen {{ nginx.default_site.http_port | default(80) }}{{ " proxy_protocol" if nginx.proxy_protocol | default(False) }} default_server;
+  listen [::]:{{ nginx.default_site.http_port | default(80) }}{{ " proxy_protocol" if nginx.proxy_protocol | default(False) }} default_server;
   server_name _;
 
 {{ logging.server("default", nginx) }}

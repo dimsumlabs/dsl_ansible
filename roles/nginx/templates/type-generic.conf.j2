@@ -11,7 +11,7 @@
 
 server {
   listen {{ item.value.port | default(443) }}{{ " proxy_protocol" if nginx.proxy_protocol | default(False) }} ssl;
-  {# listen [::]:{{ item.value.port | default(443) }} ipv6only=on ssl; #}
+  listen [::]:{{ item.value.port | default(443) }}{{ " proxy_protocol" if nginx.proxy_protocol | default(False) }} ssl;
   http2 on;
   server_name {{ vhost }};
 
