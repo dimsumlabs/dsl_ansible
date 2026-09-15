@@ -2,6 +2,15 @@
 
 dehydrated:
 
+mariadb:
+  databases:
+    test1:
+  users:
+    test1user:
+      password: testonly
+      grants:
+        test1.*: ALL
+
 nftables:
   monitoring_ports:
     tcp:
@@ -17,8 +26,20 @@ nftables:
 nginx:
   vhosts:
     hargow.dimsumlabs.com:
-      template_type: generic
-      locations:
-        /:
-          location_type: staticsite
-          root: /var/www/html/
+      template_type: wordpress
+      root: /srv/test1/wordpress
+
+wordpress:
+  test1:
+    version: 6.7.7
+    db_user: test1user
+    db_password: testonly
+    salts:
+      auth_key: "J_,|[VEJx#h,`CVFsK,a:B0J!%5qp|yA5;05g[|J~/#;G.?&xTJ-zI!/v%JI1;#)"
+      secure_auth_key: "b|O{HspjD/!HgEMALvpe6GI2p8f``T+}hDG|JHQz8?dq^Vq@f#p.c0;+3+LI}<Ar"
+      logged_in_key: "/%DD?&7oS/m|;Gv>#:+$F=zAtK-I|zc/h`k|(S|$HSna- r21YbM.K~GX2wO+o@R"
+      nonce_key: "*b@h+y!5Xmiwr<NW)0;E2+_4O?>Q!~UwRN%c_.+*~|3#Eg||=}y.DieL^=f2Z[>q"
+      auth_salt: "37BDK.H;Tv*5?3K;?eLC:opq_V)18.3p%s|DsvT/O#m:#:`Z}L4Mz-)Vp%a@%wh<"
+      secure_auth_salt: "cJDGhXd&[th|sMl-WV>Nl8fnJ+`.Mg[?+1Q#-IwKbc FE*;+Pocc!?-bM|=t>rt|"
+      logged_in_salt: "P 50%7?+wnZ~F|fc[-vo_1x`U}24|]RbB)X XB-x-eGj[$|sodHwQ&+=/IGq{E[7"
+      nonce_salt: "9=PKf6E+xH`1SC:Ne7JwB%p32?BLDaQ7kZTiqhFjPA $5DG{8K/VQ$QDDC`.M#oe"
