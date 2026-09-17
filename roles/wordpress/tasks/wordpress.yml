@@ -38,7 +38,7 @@
 
 - name: Unzip
   ansible.builtin.unarchive:
-    creates: wordpress/wp-login.php
+    creates: "/srv/{{ item.key }}/wordpress/wp-login.php"
     dest: "/srv/{{ item.key }}"
     keep_newer: true
     group: www-data
