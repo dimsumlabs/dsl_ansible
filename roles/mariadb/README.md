@@ -13,7 +13,3 @@ mariadb:
       grants:
         test1db.*: ALL
 ```
-
-# TODO
-
-- deploy daily dump script

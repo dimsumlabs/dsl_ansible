@@ -1,0 +1,14 @@
+#!/bin/bash
+#
+# Nightly simple backup of all mariadb databases
+#
+# Depends on the debian mysql debian-sys-maint admin user
+ 
+DESTDIR=/var/backups/mariadb
+mkdir -p $DESTDIR
+ 
+DBLIST=`mariadb -s --skip-column-names -e "show databases;" | grep -E -v "information_schema|performance_schema"`
+for i in $DBLIST; do
+    DESTFILE=$DESTDIR/${i}.dump.sql.gz
+    mariadb-dump $i | gzip -9 >$DESTFILE
+done
