@@ -18,6 +18,7 @@
       - etckeeper
       - htop
       - netcat-openbsd
+      - prometheus-node-exporter
       - rsync
       - screen
       - unattended-upgrades
