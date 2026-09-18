@@ -7,7 +7,7 @@ mariadb:
     test1:
   users:
     test1user:
-      password: testonly
+      passpath: mariadb/test1user
       grants:
         test1.*: ALL
 
@@ -33,7 +33,7 @@ wordpress:
   test1:
     version: 6.7.7
     db_user: test1user
-    db_password: testonly
+    db_passpath: mariadb/test1user
     salts:
       # yamllint disable rule:line-length
       auth_key: "J_,|[VEJx#h,`CVFsK,a:B0J!%5qp|yA5;05g[|J~/#;G.?&xTJ-zI!/v%JI1;#)"

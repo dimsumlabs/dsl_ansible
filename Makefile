@@ -3,6 +3,7 @@ all: lint test
 BUILD_DEP+=ansible
 BUILD_DEP+=ansible-lint
 BUILD_DEP+=flake8
+BUILD_DEP+=pass
 BUILD_DEP+=python3-coverage
 BUILD_DEP+=python3-pytest
 BUILD_DEP+=python3-pytest-cov

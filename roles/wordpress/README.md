@@ -8,7 +8,7 @@ wordpress:
   yourinstallname:
     version: 6.7.7
     db_user: wpuser
-    db_password: testonly
+    db_passpath: mariadb/test1user
     salts:
       auth_key: fillin
       secure_auth_key: fillin
@@ -23,9 +23,9 @@ wordpress:
 In the above example the "yourinstallname" is the internal site name.  This is
 used to calculate the database name and the installation directory.
 
-The database user and password, will need to match the database. If the
-mariadb role has been used to create the user, this means that there are two
-places that need to match.
+The database user and password, will need to match the database.  The
+db_passpath field describes the pathname suffix to the pass database.  This is
+prefixed with the hostname
 
 Note that the version number is only used for an initial server setup. Upgrades
 are assumed to be handled by wordpress itself.  Also, each version download

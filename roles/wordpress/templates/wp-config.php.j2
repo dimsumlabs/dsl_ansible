@@ -7,7 +7,7 @@
 
 define( 'DB_NAME', '{{ item.key }}' );
 define( 'DB_USER', '{{ item.value.db_user }}' );
-define( 'DB_PASSWORD', '{{ item.value.db_password }}' );
+define( 'DB_PASSWORD', '{{ lookup("community.general.passwordstore", inventory_hostname + "/" + item.value.db_passpath, directory="passwordstore") }}' );
 define( 'DB_HOST', 'localhost' );
 define( 'DB_CHARSET', 'utf8' );
 define( 'DB_COLLATE', '' );

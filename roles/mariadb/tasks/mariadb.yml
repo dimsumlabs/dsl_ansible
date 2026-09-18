@@ -69,7 +69,7 @@
     column_case_sensitive: true
     login_unix_socket: /var/run/mysqld/mysqld.sock
     name: "{{ item.key }}"
-    password: "{{ item.value.password }}"
+    password: "{{ lookup('community.general.passwordstore', inventory_hostname + '/' + item.value.passpath, directory='passwordstore') }}"
     # yamllint disable-line rule:line-length
     priv: "{% for k, v in item.value.grants.items() %}{{ k }}:{{ v }}{% if not loop.last %}/{% endif %}{% endfor %}"
     state: present
