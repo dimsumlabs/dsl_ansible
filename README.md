@@ -35,6 +35,19 @@ On a Debian system, the Makefile can assist you with this:
 make build_dep
 ```
 
+Sadly - for consistent and longterm support of this repo - Ansible still
+has a habit of occasionally making incompatible changes.  So, it is good
+to document which version this code is developed against and supported with.
+
+This code has been developed with the version of Ansible shipped with the
+stable Debian Trixie, and this is suggested as the best way to run the
+code.
+
+```
+ansible        12.0.0+dfsg-0+deb13u1
+ansible-core   2.19.4-0+deb13u1
+```
+
 ### Check your login
 
 To quickly check if your environment is setup and your user account, ssh key
