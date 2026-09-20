@@ -44,3 +44,4 @@ philip:
   unix_groups:
     sudo:
     systemd-journal:
+  unix_shell: /bin/zsh

@@ -81,7 +81,7 @@
     state: "{{ item.value._meta.state | default('present') }}"
     comment: "{{ item.value.comment }}"
     groups: "{{ item.value.unix_groups | default({}) | list }}"
-    shell: /bin/bash
+    shell: "{{ item.value.unix_shell | default('/bin/bash') }}"
   when:
     - item.value._meta.present
     - item.value._meta.add_normal or item.value._meta.add_bastion
