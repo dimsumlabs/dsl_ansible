@@ -15,15 +15,32 @@ hamish:
       bao.dimsumlabs.com: $6$RiGfINHJ$8MmdJsdv.6Li24AeTXs1krlNnPsFt0Z/Qfw6Z55vr8Y2uYXVs1KqaVY3KceXiSNKLspPfVKZnxWsvLJosp1DB.
       hargow.dimsumlabs.com: $y$j9T$C4uFLEus7//linLfCOpYt0$XhpOYhZz3bNiIPiFzQ7G0HZgMG6zdOKueG2jOg0x293
     ssh_key: |
-      ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAO4xCVBQAgujNjE2aul365h0nB3Fn6BXQWKmugBFA89 hamish@lrrr
-      ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDOMC/EW7HXA+OkcVwNqzWb8saRFYUX9k8mzMHaoa6nV hamish@x220
       ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFNtIJqFVCK8/GoPatnIZhTHlkUzBF2TaifKArkyNiEs hamish@peril
       ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK1NiIEQG4EhdmgE+oS612L6eP9yhIcMonOQ/Cy1I8Vn hamish@xps13
-      ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOqTtpQkv6bgHxWhr4QGf7WOY1760ArL/asGL3Lxqhlr hamish@tp25
-      ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOxAY+IHDIg+8n1QxpsFyvK7QZIJUt/tO/iFCzgszIiy hamish@hp800
   comment: Hamish Coleman
+  gpgid: A31980A41927C21EE6D9576A15B2A8B8FE684154
   linger: true
   uid: 1020
+  unix_groups:
+    sudo:
+    systemd-journal:
+
+philip:
+  access:
+    host_groups:
+      account:
+        linux:
+      ssh_key:
+        linux:
+  authentication:
+    passwords:
+      hargow.dimsumlabs.com: $y$j9T$dQV3gizuC8KHH2Lg7Jtsy0$Y5Vy6fzZF3QwqnzD2vEiaYikdOAwESSKSRbkurGvqsA
+    ssh_key: |
+      ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFkvZmRqfJyb1nFfJuVWQlju5+2XX4O1jhwIX+Y/wrbV (YubiKey)
+      sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIJOYbWgwBff9DUYKxylCswD8qx/cSKViYvHeFMXrdjdlAAAAEXNzaDpCYWNrdXBZdWJpS2V5 (Backup YubiKey)
+  comment: Philip Paeps
+  gpgid: B851CD3AC248F2ED3E2CC18CBB6D8A14AFE7D96B
+  uid: 1021
   unix_groups:
     sudo:
     systemd-journal:
