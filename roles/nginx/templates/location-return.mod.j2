@@ -1,0 +1,18 @@
+# Simply return
+#
+# nginx:
+#   vhosts:
+#     example.com:
+#       template_type: generic
+#       locations:
+#         /:
+#           location_type: return
+#           return: 301 https://www.example.com$request_uri
+#
+# location / {
+#   return 301 https://www.example.com$request_uri;
+# }
+
+{% macro render(config) %}
+     return {{ config.return }};
+{% endmacro %}

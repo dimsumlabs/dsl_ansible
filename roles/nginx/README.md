@@ -99,6 +99,7 @@ the healthy request to the proxied service (without any auth applied)
 type       | Description
 ---------- | -----------
 proxy      | Proxies requests
+return     | Generate custom return codes - like redirect
 staticsite | Serves up location.root, with optional try_files_redirect
 upload     | Provides a webdav compatible upload endpoint
 websocket  | Similar to the proxy type, but with additional websocket config
@@ -121,6 +122,23 @@ nginx:
 Where `proxy` is required and is the server for this location.
 `proxy_set_header` is optional and contains a list of headers to add to the
 request.
+
+#### return
+
+```yaml
+nginx:
+  vhosts:
+    example.com:
+      template_type: generic
+      locations:
+        /:
+          location_type: return
+          return: 301 https://www.example.com $request_uri
+```
+
+Configured this location with a specific return code.  Mainly useful for
+providing redirects - as in the above example.
+
 
 #### staticsite
 
