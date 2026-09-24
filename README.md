@@ -24,6 +24,17 @@ To ensure a minimum level of security:
 This means that the combination of the ssh key and the user password become
 a very light-weight two factor process.
 
+## Secrets access setup
+
+This repository uses an embedded passwordstore directory to store secrets in a
+way that is shareable, version controlled and secure.
+
+Before reading the secrets, provide your GPG public key to someone with
+existing access so that they can enroll the access.
+
+When running Ansible, you will need to have your gpg passphrase cached in a
+gpg key agent, otherwise the automated access will fail.
+
 ## Running Ansible
 
 You will need to have ansible installed and on your path before running
