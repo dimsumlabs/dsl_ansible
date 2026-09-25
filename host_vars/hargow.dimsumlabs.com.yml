@@ -4,8 +4,13 @@ dehydrated:
 
 mariadb:
   databases:
+    dsl1:
     test1:
   users:
+    dsl1user:
+      passpath: mariadb/dsl1user
+      grants:
+        dsl1.*: ALL
     test1user:
       passpath: mariadb/test1user
       grants:
@@ -36,6 +41,11 @@ nginx:
       root: /srv/test1/wordpress
 
 wordpress:
+  dsl1:
+    version: 6.7.7
+    db_user: dsl1user
+    db_passpath: mariadb/dsl1user
+    salts_passpath: wordpress/dsl1salts
   test1:
     version: 6.7.7
     db_user: test1user
