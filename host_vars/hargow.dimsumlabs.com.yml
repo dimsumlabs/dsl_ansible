@@ -37,8 +37,11 @@ nginx:
           location_type: return
           return: 301 https://www.dimsumlabs.com$request_uri
     hargow.dimsumlabs.com:
-      template_type: wordpress
-      root: /srv/test1/wordpress
+      template_type: generic
+      locations:
+        /:
+          location_type: staticsite
+          root: /var/www/html
     www.dimsumlabs.com:
       template_type: wordpress
       root: /srv/dsl1/wordpress
