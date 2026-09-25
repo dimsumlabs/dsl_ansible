@@ -55,9 +55,6 @@
 # - file = u=rw,go=r
 
 - name: Config file
-  vars:
-    # yamllint disable-line rule:line-length
-    salts: "{{ lookup('community.general.passwordstore', item.value.salts_passpath, subkey='salts', directory='passwordstore') }}"
   ansible.builtin.template:
     dest: "/srv/{{ item.key }}/wordpress/wp-config.php"
     group: www-data
