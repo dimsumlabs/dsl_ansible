@@ -39,6 +39,9 @@ nginx:
     hargow.dimsumlabs.com:
       template_type: wordpress
       root: /srv/test1/wordpress
+    www.dimsumlabs.com:
+      template_type: wordpress
+      root: /srv/dsl1/wordpress
 
 wordpress:
   dsl1:
