@@ -31,4 +31,5 @@
 
 - name: Ensure passwordstore is working
   ansible.builtin.debug:
+    # yamllint disable-line rule:line-length
     msg: "sentinal is {{ lookup('community.general.passwordstore', 'sentinal', directory='passwordstore') }}"
