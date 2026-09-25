@@ -28,3 +28,7 @@
     that:
       - ansible_user_uid == 0
       - ansible_env.LANG in ['C', 'C.UTF-8']
+
+- name: Ensure passwordstore is working
+  ansible.builtin.debug:
+    msg: "sentinal is {{ lookup('community.general.passwordstore', 'sentinal', directory='passwordstore') }}"
