@@ -25,6 +25,12 @@ nftables:
 
 nginx:
   vhosts:
+    dimsumlabs.com:
+      template_type: generic
+      locations:
+        /:
+          location_type: return
+          return: 301 https://www.dimsumlabs.com$request_uri
     hargow.dimsumlabs.com:
       template_type: wordpress
       root: /srv/test1/wordpress
